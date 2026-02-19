@@ -9,11 +9,11 @@ import {
     doc,
     query,
     where,
-    setDoc,
     getDoc,
-    serverTimestamp,
-    writeBatch
+    serverTimestamp
 } from 'firebase/firestore';
+import { auth } from '../firebase';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 // Collection Names
 const HOSTELS = 'hostels';
@@ -21,6 +21,25 @@ const ROOMS = 'rooms';
 const BOOKINGS = 'bookings';
 const STUDENTS = 'students';
 const ADMINS = 'admins';
+const BANLIST = 'banlist';
+
+// Ban Logic
+export const checkIfBanned = async (email) => {
+    const q = query(collection(db, BANLIST), where("email", "==", email));
+    const snapshot = await getDocs(q);
+    return !snapshot.empty;
+};
+
+export const banStudent = async (studentId, email) => {
+    // Add to banlist
+    await addDoc(collection(db, BANLIST), {
+        email,
+        bannedAt: serverTimestamp()
+    });
+    // Delete student record
+    const docRef = doc(db, STUDENTS, studentId);
+    return await deleteDoc(docRef);
+};
 
 // Common functions
 export const getAllDocuments = async (collectionName) => {
@@ -133,6 +152,11 @@ export const addHostel = (hostelData) => addDocument(HOSTELS, hostelData);
 export const addRoom = (roomData) => addDocument(ROOMS, roomData);
 
 export const studentSignup = async (studentData) => {
+    // Check if banned
+    const isBanned = await checkIfBanned(studentData.email);
+    if (isBanned) {
+        throw new Error("This account has been suspended by the administrator.");
+    }
     // Check if email exists
     const q = query(collection(db, STUDENTS), where("email", "==", studentData.email));
     const querySnapshot = await getDocs(q);
@@ -144,6 +168,10 @@ export const studentSignup = async (studentData) => {
 };
 
 export const studentLogin = async (email, password) => {
+    const isBanned = await checkIfBanned(email);
+    if (isBanned) {
+        throw new Error("Your access has been revoked by the administrator.");
+    }
     const q = query(collection(db, STUDENTS), where("email", "==", email), where("password", "==", password));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
@@ -203,17 +231,60 @@ export const getHostelRatings = async (hostelId) => {
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
+
 export const initFirebase = async () => {
     // Seed admin if not exists
-    const q = query(collection(db, ADMINS), where("email", "==", "tharunsasupallli@gmail.com"));
+    const q = query(collection(db, ADMINS), where("email", "==", "tharunsasupalli@gmail.com"));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
         await addDoc(collection(db, ADMINS), {
-            email: "tharunsasupallli@gmail.com",
+            email: "tharunsasupalli@gmail.com",
             password: "123456",
             role: "admin",
             name: "Admin"
         });
         console.log("Admin account seeded in Firebase");
+    }
+};
+
+export const googleLogin = async (role = 'student') => {
+    const provider = new GoogleAuthProvider();
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        if (role !== 'admin') {
+            const isBanned = await checkIfBanned(user.email);
+            if (isBanned) {
+                throw new Error("Access Denied: This account has been suspended.");
+            }
+        }
+
+        // Check if user exists in our Firestore collection
+        const collectionName = role === 'admin' ? ADMINS : STUDENTS;
+        const q = query(collection(db, collectionName), where("email", "==", user.email));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            if (role === 'admin') {
+                throw new Error("You do not have administrative access.");
+            } else {
+                // For students, create profile if doesn't exist
+                const newStudent = {
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    createdAt: serverTimestamp()
+                };
+                const docRef = await addDoc(collection(db, STUDENTS), newStudent);
+                return { id: docRef.id, ...newStudent };
+            }
+        }
+
+        const userDoc = querySnapshot.docs[0];
+        return { id: userDoc.id, ...userDoc.data(), role: role };
+    } catch (error) {
+        console.error("Google Login Error:", error);
+        throw error;
     }
 };

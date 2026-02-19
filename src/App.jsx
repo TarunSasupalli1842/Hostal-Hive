@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, Home as HomeIcon, BookOpen, User, Building, LayoutDashboard, Menu, X, Sparkles, Navigation } from 'lucide-react';
+import { LogOut, Home as HomeIcon, BookOpen, User, Building, LayoutDashboard, Menu, X, Sparkles } from 'lucide-react';
 import { initStorage, getCurrentUser, logout } from './utils/storage';
 import { initFirebase } from './utils/firebaseService';
 

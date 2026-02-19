@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     getHostels, getRooms, getBookings, getStudents,
-    addHostel, addRoom, deleteDocument, updateDocument, deleteBookingRecord
+    addHostel, addRoom, deleteDocument, updateDocument, deleteBookingRecord,
+    banStudent
 } from '../utils/firebaseService';
-import { Plus, Trash2, Edit, Save, X, Building, Home as HomeIcon, Users, BookOpen, LayoutDashboard, Search, Filter, MoreHorizontal, ArrowUpRight, TrendingUp } from 'lucide-react';
+import { Plus, Trash2, Edit, X, Building, Home as HomeIcon, Users, BookOpen, LayoutDashboard, Search, TrendingUp } from 'lucide-react';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -143,8 +144,11 @@ const AdminDashboard = () => {
     };
 
     const deleteStudent = async (id) => {
-        if (window.confirm("Are you sure you want to delete this student? This action cannot be undone.")) {
-            await deleteDocument('students', id);
+        const student = students.find(s => s.id === id);
+        if (!student) return;
+
+        if (window.confirm(`Are you sure you want to ban ${student.name}? This student will PERMANENTLY lose access to their account and won't be able to re-register with this email.`)) {
+            await banStudent(id, student.email);
             await fetchData();
         }
     };
