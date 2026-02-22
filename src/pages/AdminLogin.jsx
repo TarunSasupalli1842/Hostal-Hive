@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { adminLogin, googleLogin } from '../utils/firebaseService';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { adminLogin, googleLogin, ownerLogin } from '../utils/firebaseService';
 import { setCurrentUser } from '../utils/storage';
-import { ShieldCheck, Lock, Mail, ArrowRight, Loader2 } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, ArrowRight, Loader2, Building2, Sparkles } from 'lucide-react';
 
 const AdminLogin = ({ onLogin }) => {
     const [email, setEmail] = useState('');
@@ -12,19 +12,28 @@ const AdminLogin = ({ onLogin }) => {
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const isOwnerLogin = queryParams.get('role') === 'owner';
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
         try {
-            const adminUser = await adminLogin(email, password);
-            if (adminUser) {
-                setCurrentUser(adminUser);
-                onLogin(adminUser);
+            let user;
+            if (isOwnerLogin) {
+                user = await ownerLogin(email, password);
+            } else {
+                user = await adminLogin(email, password);
+            }
+
+            if (user) {
+                setCurrentUser(user);
+                onLogin(user);
                 navigate('/admin');
             } else {
-                setError('Invalid administrative credentials');
+                setError(isOwnerLogin ? 'Invalid owner credentials' : 'Invalid administrative credentials');
             }
         } catch (err) {
             console.error(err);
@@ -78,7 +87,7 @@ const AdminLogin = ({ onLogin }) => {
                         width: '70px',
                         height: '70px',
                         borderRadius: '20px',
-                        background: 'linear-gradient(135deg, #334155 0%, #0f172a 100%)',
+                        background: isOwnerLogin ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #334155 0%, #0f172a 100%)',
                         color: 'white',
                         display: 'flex',
                         alignItems: 'center',
@@ -87,10 +96,14 @@ const AdminLogin = ({ onLogin }) => {
                         border: '1px solid rgba(255, 255, 255, 0.2)',
                         boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.3)'
                     }}>
-                        <ShieldCheck size={36} />
+                        {isOwnerLogin ? <Building2 size={36} /> : <ShieldCheck size={36} />}
                     </div>
-                    <h2 style={{ fontSize: '32px', fontWeight: '800', color: 'white', marginBottom: '8px', letterSpacing: '-0.5px' }}>Admin Nexus</h2>
-                    <p style={{ color: '#94a3b8', fontSize: '16px' }}>Secure Property Management Access</p>
+                    <h2 style={{ fontSize: '32px', fontWeight: '800', color: 'white', marginBottom: '8px', letterSpacing: '-0.5px' }}>
+                        {isOwnerLogin ? 'Owner Portal' : 'Admin Nexus'}
+                    </h2>
+                    <p style={{ color: '#94a3b8', fontSize: '16px' }}>
+                        {isOwnerLogin ? 'Property Management Login' : 'Secure Administrative Access'}
+                    </p>
                 </div>
 
                 {error && (
@@ -209,8 +222,11 @@ const AdminLogin = ({ onLogin }) => {
                 </button>
 
                 <div style={{ textAlign: 'center', marginTop: '32px' }}>
+                    <p style={{ fontSize: '15px', color: '#94a3b8', marginBottom: '16px' }}>
+                        New here? <Link to={`/signup?role=${isOwnerLogin ? 'owner' : 'admin'}`} style={{ color: isOwnerLogin ? '#10b981' : '#60a5fa', textDecoration: 'none', fontWeight: '700' }}>Create an account</Link>
+                    </p>
                     <Link to="/login" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px', fontWeight: '600', transition: 'color 0.2s ease' }}>
-                        Not an Admin? <span style={{ color: '#60a5fa', textDecoration: 'underline' }}>Student Login</span>
+                        Not {isOwnerLogin ? 'an Owner' : 'an Admin'}? <span style={{ color: '#60a5fa', textDecoration: 'underline' }}>Main Portal</span>
                     </Link>
                 </div>
             </div>

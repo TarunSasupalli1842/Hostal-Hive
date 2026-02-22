@@ -21,6 +21,7 @@ const ROOMS = 'rooms';
 const BOOKINGS = 'bookings';
 const STUDENTS = 'students';
 const ADMINS = 'admins';
+const OWNERS = 'owners';
 const BANLIST = 'banlist';
 
 // Ban Logic
@@ -69,6 +70,29 @@ export const getHostels = () => getAllDocuments(HOSTELS);
 export const getRooms = () => getAllDocuments(ROOMS);
 export const getBookings = () => getAllDocuments(BOOKINGS);
 export const getStudents = () => getAllDocuments(STUDENTS);
+export const getOwners = () => getAllDocuments(OWNERS);
+
+export const getHostelsByOwner = async (ownerId) => {
+    const q = query(collection(db, HOSTELS), where("ownerId", "==", ownerId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+export const getRoomsByOwner = async (ownerId) => {
+    const hostels = await getHostelsByOwner(ownerId);
+    const hostelIds = hostels.map(h => h.id);
+    if (hostelIds.length === 0) return [];
+
+    const q = query(collection(db, ROOMS), where("hostelId", "in", hostelIds));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+export const getBookingsByOwner = async (ownerId) => {
+    const q = query(collection(db, BOOKINGS), where("ownerId", "==", ownerId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
 
 export const getRoomsByHostel = async (hostelId) => {
     const q = query(collection(db, ROOMS), where("hostelId", "==", hostelId));
@@ -189,6 +213,26 @@ export const adminLogin = async (email, password) => {
     }
     const userDoc = querySnapshot.docs[0];
     return { id: userDoc.id, ...userDoc.data(), role: 'admin' };
+};
+
+export const ownerSignup = async (ownerData) => {
+    const q = query(collection(db, OWNERS), where("email", "==", ownerData.email));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+        throw new Error("Email already exists");
+    }
+    const docRef = await addDoc(collection(db, OWNERS), ownerData);
+    return { id: docRef.id, ...ownerData, role: 'owner' };
+};
+
+export const ownerLogin = async (email, password) => {
+    const q = query(collection(db, OWNERS), where("email", "==", email), where("password", "==", password));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    const userDoc = querySnapshot.docs[0];
+    return { id: userDoc.id, ...userDoc.data(), role: 'owner' };
 };
 
 export const getStudentBookings = async (studentId) => {

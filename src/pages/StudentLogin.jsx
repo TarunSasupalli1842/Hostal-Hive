@@ -202,12 +202,12 @@ const StudentLogin = ({ onLogin }) => {
                 </button>
 
                 <div style={{ textAlign: 'center', marginTop: '32px' }}>
-                    <p style={{ fontSize: '15px', color: '#6b7280' }}>
-                        New here? <Link to="/signup" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: '700' }}>Create an account</Link>
+                    <p style={{ fontSize: '15px', color: '#6b7280', marginBottom: '16px' }}>
+                        New here? <Link to="/signup?role=student" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: '700' }}>Create an account</Link>
                     </p>
                     <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #f3f4f6' }}>
-                        <Link to="/admin-login" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                            Are you an admin? <span style={{ color: '#1f2937', fontWeight: '700' }}>Access Portal</span>
+                        <Link to="/login" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            Looking for another portal? <span style={{ color: '#1f2937', fontWeight: '700' }}>Switch Portal</span>
                         </Link>
                     </div>
                 </div>

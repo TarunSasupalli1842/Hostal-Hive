@@ -116,12 +116,12 @@ const Home = () => {
                             <div>
                                 <h2 style={{ fontSize: '24px', fontWeight: '800' }}>Hey {user.name}, welcome back!</h2>
                                 <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>
-                                    {user.role === 'admin' ? 'Manage your property fleet' : 'Manage your stays and explore more'}
+                                    {(user.role === 'admin' || user.role === 'owner') ? 'Manage your property fleet' : 'Manage your stays and explore more'}
                                 </p>
                             </div>
                         </div>
                         <Link
-                            to={user.role === 'admin' ? '/admin' : '/my-bookings'}
+                            to={(user.role === 'admin' || user.role === 'owner') ? '/admin' : '/my-bookings'}
                             className="btn-outline"
                             style={{ borderRadius: '20px', fontSize: '16px' }}
                         >

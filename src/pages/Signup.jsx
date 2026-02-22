@@ -1,32 +1,41 @@
 
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { setCurrentUser } from '../utils/storage';
-import { studentSignup as fbSignup } from '../utils/firebaseService';
-import { UserPlus, User, Mail, School, Phone, Lock, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+import { studentSignup as fbSignup, ownerSignup } from '../utils/firebaseService';
+import { UserPlus, User, Mail, School, Phone, Lock, ArrowRight, Loader2, Sparkles, Building2 } from 'lucide-react';
 
 const Signup = ({ onLogin }) => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const initialRole = queryParams.get('role') || 'student';
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         college: '',
-        phone: ''
+        phone: '',
+        role: initialRole
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
         try {
-            const newUser = { ...formData, role: 'student' };
-            const student = await fbSignup(newUser);
-            setCurrentUser(student);
-            onLogin(student);
-            navigate('/');
+            let user;
+            if (formData.role === 'owner') {
+                user = await ownerSignup(formData);
+            } else {
+                user = await fbSignup(formData);
+            }
+            setCurrentUser(user);
+            onLogin(user);
+            navigate(user.role === 'owner' ? '/admin' : '/');
         } catch (err) {
             setError(err.message);
         } finally {
@@ -107,6 +116,51 @@ const Signup = ({ onLogin }) => {
                     </div>
                 )}
 
+                <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
+                    <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, role: 'student' })}
+                        style={{
+                            flex: 1,
+                            padding: '16px',
+                            borderRadius: '16px',
+                            border: formData.role === 'student' ? '2px solid #6366f1' : '1.5px solid #e5e7eb',
+                            background: formData.role === 'student' ? 'rgba(99, 102, 241, 0.05)' : 'white',
+                            color: formData.role === 'student' ? '#6366f1' : '#6b7280',
+                            fontWeight: '700',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <User size={18} /> Student
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, role: 'owner' })}
+                        style={{
+                            flex: 1,
+                            padding: '16px',
+                            borderRadius: '16px',
+                            border: formData.role === 'owner' ? '2px solid #6366f1' : '1.5px solid #e5e7eb',
+                            background: formData.role === 'owner' ? 'rgba(99, 102, 241, 0.05)' : 'white',
+                            color: formData.role === 'owner' ? '#6366f1' : '#6b7280',
+                            fontWeight: '700',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <Building2 size={18} /> Hostel Owner
+                    </button>
+                </div>
+
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
                         <div style={{ position: 'relative' }}>
@@ -114,6 +168,7 @@ const Signup = ({ onLogin }) => {
                             <input
                                 name="name"
                                 placeholder="Full Name"
+                                value={formData.name}
                                 onChange={handleChange}
                                 required
                                 style={{
@@ -132,6 +187,7 @@ const Signup = ({ onLogin }) => {
                             <input
                                 name="phone"
                                 placeholder="Phone Number"
+                                value={formData.phone}
                                 onChange={handleChange}
                                 required
                                 style={{
@@ -153,6 +209,7 @@ const Signup = ({ onLogin }) => {
                             name="email"
                             type="email"
                             placeholder="Email Address"
+                            value={formData.email}
                             onChange={handleChange}
                             required
                             style={{
@@ -167,24 +224,27 @@ const Signup = ({ onLogin }) => {
                         />
                     </div>
 
-                    <div style={{ position: 'relative' }}>
-                        <School style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} size={18} />
-                        <input
-                            name="college"
-                            placeholder="College / University Name"
-                            onChange={handleChange}
-                            required
-                            style={{
-                                width: '100%',
-                                padding: '16px 16px 16px 48px',
-                                borderRadius: '16px',
-                                border: '1.5px solid #e5e7eb',
-                                background: 'white',
-                                fontSize: '15px',
-                                boxSizing: 'border-box'
-                            }}
-                        />
-                    </div>
+                    {formData.role !== 'owner' && (
+                        <div style={{ position: 'relative' }}>
+                            <School style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} size={18} />
+                            <input
+                                name="college"
+                                placeholder="College / University Name"
+                                value={formData.college}
+                                onChange={handleChange}
+                                required
+                                style={{
+                                    width: '100%',
+                                    padding: '16px 16px 16px 48px',
+                                    borderRadius: '16px',
+                                    border: '1.5px solid #e5e7eb',
+                                    background: 'white',
+                                    fontSize: '15px',
+                                    boxSizing: 'border-box'
+                                }}
+                            />
+                        </div>
+                    )}
 
                     <div style={{ position: 'relative' }}>
                         <Lock style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} size={18} />
@@ -192,6 +252,7 @@ const Signup = ({ onLogin }) => {
                             name="password"
                             type="password"
                             placeholder="Create Password"
+                            value={formData.password}
                             onChange={handleChange}
                             required
                             style={{
@@ -228,7 +289,7 @@ const Signup = ({ onLogin }) => {
 
                 <div style={{ textAlign: 'center', marginTop: '40px', borderTop: '1px solid #f3f4f6', paddingTop: '32px' }}>
                     <p style={{ fontSize: '16px', color: '#6b7280' }}>
-                        Already part of the hive? <Link to="/student-login" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: '800' }}>Login here</Link>
+                        Already part of the hive? <Link to="/login" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: '800' }}>Login here</Link>
                     </p>
                 </div>
             </div>

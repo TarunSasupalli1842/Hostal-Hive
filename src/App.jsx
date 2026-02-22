@@ -71,7 +71,7 @@ const Navbar = ({ user, onLogout }) => {
           <Link to="/" style={{ textDecoration: 'none', color: textColor, fontWeight: 700, fontSize: '16px', letterSpacing: '0.2px' }}>Explore</Link>
           {user ? (
             <>
-              {user.role === 'admin' ? (
+              {user.role === 'admin' || user.role === 'owner' ? (
                 <Link to="/admin" style={{ textDecoration: 'none', color: textColor, fontWeight: 700, fontSize: '16px' }}>Dashboard</Link>
               ) : (
                 <Link to="/my-bookings" style={{ textDecoration: 'none', color: textColor, fontWeight: 700, fontSize: '16px' }}>My Bookings</Link>
@@ -107,7 +107,7 @@ const Navbar = ({ user, onLogout }) => {
           <Link to="/" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '18px', fontWeight: '700' }}>Home</Link>
           {user ? (
             <>
-              {user.role === 'admin' ? (
+              {user.role === 'admin' || user.role === 'owner' ? (
                 <Link to="/admin" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '18px', fontWeight: '700' }}>Dashboard</Link>
               ) : (
                 <Link to="/my-bookings" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '18px', fontWeight: '700' }}>My Bookings</Link>

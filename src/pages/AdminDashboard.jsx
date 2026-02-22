@@ -2,19 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    getHostels, getRooms, getBookings, getStudents,
+    getHostels, getRooms, getBookings, getStudents, getOwners,
     addHostel, addRoom, deleteDocument, updateDocument, deleteBookingRecord,
-    banStudent
+    banStudent, getHostelsByOwner, getRoomsByOwner, getBookingsByOwner
 } from '../utils/firebaseService';
-import { Plus, Trash2, Edit, X, Building, Home as HomeIcon, Users, BookOpen, LayoutDashboard, Search, TrendingUp } from 'lucide-react';
+import { Plus, Trash2, Edit, X, Building, Building2, Home as HomeIcon, Users, BookOpen, LayoutDashboard, Search, TrendingUp } from 'lucide-react';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const [activeTab, setActiveTab] = useState('hostels');
     const [hostels, setHostels] = useState([]);
     const [rooms, setRooms] = useState([]);
     const [bookings, setBookings] = useState([]);
     const [students, setStudents] = useState([]);
+    const [owners, setOwners] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('All');
@@ -30,15 +32,29 @@ const AdminDashboard = () => {
     const [editingRoomId, setEditingRoomId] = useState(null);
 
     const fetchData = async () => {
+        if (!currentUser) return;
         setLoading(true);
         try {
-            const [h, r, b, s] = await Promise.all([
-                getHostels(), getRooms(), getBookings(), getStudents()
-            ]);
+            let h, r, b, s, o;
+
+            if (currentUser.role === 'owner') {
+                [h, r, b] = await Promise.all([
+                    getHostelsByOwner(currentUser.id),
+                    getRoomsByOwner(currentUser.id),
+                    getBookingsByOwner(currentUser.id)
+                ]);
+                s = [];
+                o = [];
+            } else {
+                [h, r, b, s, o] = await Promise.all([
+                    getHostels(), getRooms(), getBookings(), getStudents(), getOwners()
+                ]);
+            }
             setHostels(h);
             setRooms(r);
             setBookings(b);
             setStudents(s);
+            setOwners(o);
         } catch (err) {
             console.error(err);
         } finally {
@@ -47,8 +63,7 @@ const AdminDashboard = () => {
     };
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('currentUser'));
-        if (!user || user.role !== 'admin') {
+        if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'owner')) {
             navigate('/admin-login');
         } else {
             fetchData();
@@ -57,12 +72,15 @@ const AdminDashboard = () => {
 
     const handleSaveHostel = async (e) => {
         e.preventDefault();
-        const imageList = typeof newHostel.images === 'string' ? newHostel.images.split(',').map(i => i.trim()).filter(i => i) : newHostel.images;
+        const rawImages = newHostel.images || '';
+        const imageList = typeof rawImages === 'string' ? rawImages.split(',').map(i => i.trim()).filter(i => i) : rawImages;
+
         const hostelData = {
             ...newHostel,
-            price: parseInt(newHostel.price),
-            amenities: typeof newHostel.amenities === 'string' ? newHostel.amenities.split(',').map(a => a.trim()) : newHostel.amenities,
-            images: imageList.length > 0 ? imageList : ['https://images.unsplash.com/photo-1555854817-5b2738a7528d?auto=format&fit=crop&w=800&q=80']
+            price: parseInt(newHostel.price) || 0,
+            amenities: typeof newHostel.amenities === 'string' ? newHostel.amenities.split(',').map(a => a.trim()).filter(a => a) : (newHostel.amenities || []),
+            images: (Array.isArray(imageList) && imageList.length > 0) ? imageList : ['https://images.unsplash.com/photo-1555854817-5b2738a7528d?auto=format&fit=crop&w=800&q=80'],
+            ownerId: currentUser.id
         };
 
         if (editingHostelId) {
@@ -160,6 +178,13 @@ const AdminDashboard = () => {
         }
     };
 
+    const deleteOwner = async (id) => {
+        if (window.confirm("Are you sure you want to remove this hostel owner? Their properties will remain but will be orphaned.")) {
+            await deleteDocument('owners', id);
+            await fetchData();
+        }
+    };
+
     const updateBookingStatus = async (id, newStatus) => {
         await updateDocument('bookings', id, { status: newStatus });
         await fetchData();
@@ -188,12 +213,18 @@ const AdminDashboard = () => {
                         b.phone.toLowerCase().includes(term);
                     const matchesFilter = filterStatus === 'All' || b.status === filterStatus;
                     return matchesSearch && matchesFilter;
-                });
+                }).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
             case 'students':
                 return students.filter(s =>
                     s.name.toLowerCase().includes(term) ||
                     s.email.toLowerCase().includes(term) ||
                     s.college.toLowerCase().includes(term)
+                );
+            case 'owners':
+                return owners.filter(o =>
+                    o.name.toLowerCase().includes(term) ||
+                    o.email.toLowerCase().includes(term) ||
+                    (o.phone && o.phone.toLowerCase().includes(term))
                 );
             default:
                 return [];
@@ -203,9 +234,10 @@ const AdminDashboard = () => {
     const stats = [
         { label: 'Total Hostels', value: hostels.length, icon: <Building size={24} />, color: '#6366f1' },
         { label: 'Total Bookings', value: bookings.length, icon: <BookOpen size={24} />, color: '#10b981' },
-        { label: 'Registered Students', value: students.length, icon: <Users size={24} />, color: '#f59e0b' },
+        currentUser?.role === 'admin' ? { label: 'Registered Students', value: students.length, icon: <Users size={24} />, color: '#f59e0b' } : null,
+        currentUser?.role === 'admin' ? { label: 'Hostel Owners', value: owners.length, icon: <Building2 size={24} />, color: '#8b5cf6' } : null,
         { label: 'Available Rooms', value: rooms.reduce((acc, r) => acc + (r.available || 0), 0), icon: <HomeIcon size={24} />, color: '#f43f5e' },
-    ];
+    ].filter(s => s);
 
     return (
         <div className="theme-slate" style={{ background: '#f8fafc', minHeight: '100vh', padding: '130px 0 60px' }}>
@@ -214,9 +246,9 @@ const AdminDashboard = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '48px' }}>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: '800', fontSize: '14px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            <LayoutDashboard size={18} /> Administrative Nexus
+                            <LayoutDashboard size={18} /> {currentUser?.role === 'owner' ? 'Owner Performance' : 'Administrative Nexus'}
                         </div>
-                        <h1 style={{ fontSize: '48px', letterSpacing: '-1.5px' }}>Nexus <span className="gradient-text">Dashboard</span></h1>
+                        <h1 style={{ fontSize: '48px', letterSpacing: '-1.5px' }}>{currentUser?.role === 'owner' ? 'Owner' : 'Nexus'} <span className="gradient-text">Dashboard</span></h1>
                     </div>
                     <div style={{ display: 'flex', gap: '16px' }}>
                         <button onClick={() => setShowHostelForm(true)} className="btn-primary" style={{ borderRadius: '16px' }}>
@@ -260,8 +292,9 @@ const AdminDashboard = () => {
                             { id: 'hostels', icon: <Building size={20} />, label: 'Manage Hostels' },
                             { id: 'rooms', icon: <HomeIcon size={20} />, label: 'Room Configurations' },
                             { id: 'bookings', icon: <BookOpen size={20} />, label: 'Real-time Bookings' },
-                            { id: 'students', icon: <Users size={20} />, label: 'Student Directory' }
-                        ].map(tab => (
+                            currentUser?.role === 'admin' ? { id: 'owners', icon: <Building2 size={20} />, label: 'Hostel Owners' } : null,
+                            currentUser?.role === 'admin' ? { id: 'students', icon: <Users size={20} />, label: 'Student Directory' } : null
+                        ].filter(t => t).map(tab => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
@@ -391,7 +424,12 @@ const AdminDashboard = () => {
                                             {getFilteredData().map(b => (
                                                 <tr key={b.id} style={{ background: 'var(--bg-subtle)' }}>
                                                     <td style={{ padding: '20px', borderRadius: '16px 0 0 16px' }}>
-                                                        <div style={{ fontWeight: '700' }}>{b.studentName}</div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                            <div style={{ fontWeight: '700' }}>{b.studentName}</div>
+                                                            {b.createdAt && (Date.now() - b.createdAt.toDate().getTime() < 86400000) && (
+                                                                <span style={{ fontSize: '10px', background: 'var(--primary)', color: 'white', padding: '2px 6px', borderRadius: '6px', fontWeight: '800' }}>NEW</span>
+                                                            )}
+                                                        </div>
                                                         <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{b.phone}</div>
                                                     </td>
                                                     <td style={{ padding: '20px' }}>
@@ -416,6 +454,40 @@ const AdminDashboard = () => {
                                                                 boxShadow: 'var(--shadow-sm)'
                                                             }}
                                                         >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+
+                                {activeTab === 'owners' && (
+                                    <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 12px' }}>
+                                        <thead>
+                                            <tr style={{ color: 'var(--text-muted)', fontSize: '14px', textAlign: 'left' }}>
+                                                <th style={{ padding: '0 20px 10px' }}>OWNER NAME</th>
+                                                <th style={{ padding: '0 20px 10px' }}>CONTACT INFO</th>
+                                                <th style={{ padding: '0 20px 10px' }}>HOSTELS MANAGED</th>
+                                                <th style={{ padding: '0 20px 10px' }}>ACTIONS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {getFilteredData().map(o => (
+                                                <tr key={o.id} style={{ background: 'var(--bg-subtle)' }}>
+                                                    <td style={{ padding: '20px', borderRadius: '16px 0 0 16px', fontWeight: '700' }}>{o.name}</td>
+                                                    <td style={{ padding: '20px' }}>
+                                                        <div style={{ fontSize: '14px' }}>{o.email}</div>
+                                                        <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{o.phone || 'N/A'}</div>
+                                                    </td>
+                                                    <td style={{ padding: '20px' }}>
+                                                        <span className="badge badge-blue" style={{ background: 'white' }}>
+                                                            {hostels.filter(h => h.ownerId === o.id).length} Properties
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ padding: '20px', borderRadius: '0 16px 16px 0' }}>
+                                                        <button onClick={() => deleteOwner(o.id)} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'white', color: 'var(--secondary)', boxShadow: 'var(--shadow-sm)' }}>
                                                             <Trash2 size={16} />
                                                         </button>
                                                     </td>
