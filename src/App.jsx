@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, Home as HomeIcon, BookOpen, User, Building, LayoutDashboard, Menu, X, Sparkles } from 'lucide-react';
+import { LogOut, Home as HomeIcon, BookOpen, User, Building, LayoutDashboard, Menu, X, Sparkles, Compass, Shield, Phone } from 'lucide-react';
 import { initStorage, getCurrentUser, logout } from './utils/storage';
 import { initFirebase } from './utils/firebaseService';
 
@@ -26,7 +26,7 @@ const Navbar = ({ user, onLogout }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 40);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -39,85 +39,124 @@ const Navbar = ({ user, onLogout }) => {
   };
 
   const isHome = location.pathname === '/';
-  const navBackground = scrolled ? 'rgba(255, 255, 255, 0.8)' : (isHome ? 'transparent' : 'white');
+  const navBackground = scrolled ? 'rgba(255, 255, 255, 0.85)' : (isHome ? 'transparent' : 'white');
   const textColor = scrolled || !isHome ? 'var(--text-main)' : 'white';
-  const logoColor = scrolled || !isHome ? 'var(--primary)' : 'white';
+  const logoColor = scrolled || !isHome ? 'var(--text-main)' : 'white';
 
   return (
-    <nav className={scrolled ? 'glass' : ''} style={{
+    <nav style={{
       backgroundColor: navBackground,
-      borderBottom: scrolled ? '1px solid var(--glass-border)' : '1px solid transparent',
       position: 'fixed',
       top: 0,
       left: 0,
       right: 0,
       zIndex: 1000,
-      transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-      backdropFilter: scrolled ? 'blur(16px)' : 'none',
-      height: scrolled ? '80px' : '90px',
+      transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+      backdropFilter: scrolled ? 'blur(20px)' : 'none',
+      height: scrolled ? '74px' : '96px',
       display: 'flex',
-      alignItems: 'center'
+      alignItems: 'center',
+      borderBottom: scrolled ? '1px solid rgba(0,0,0,0.05)' : '1px solid transparent',
+      boxShadow: scrolled ? '0 10px 30px rgba(0,0,0,0.03)' : 'none'
     }}>
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-        <Link to="/" style={{ textDecoration: 'none', color: logoColor, display: 'flex', alignItems: 'center', gap: '12px', transition: 'color 0.4s' }}>
-          <div style={{ background: scrolled || !isHome ? 'var(--primary)' : 'white', color: scrolled || !isHome ? 'white' : 'var(--primary)', padding: '8px', borderRadius: '12px', display: 'flex', transition: 'all 0.4s' }}>
-            <Building size={24} strokeWidth={2.5} />
+        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '14px', transition: 'transform 0.3s' }} className="nav-logo">
+          <div style={{ background: 'white', padding: '5px', borderRadius: '14px', display: 'flex', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.05)' }}>
+            <img src="/logo.png" alt="HostelHive" style={{ height: scrolled ? '34px' : '42px', width: 'auto', transition: 'height 0.4s' }} />
           </div>
-          <span style={{ fontWeight: 800, fontSize: '24px', letterSpacing: '-0.5px' }}>HostelHive</span>
+          <span style={{ fontWeight: 900, fontSize: scrolled ? '22px' : '26px', letterSpacing: '-0.03em', color: logoColor, transition: 'all 0.4s' }}>HostelHive</span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="desktop-only" style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
-          <Link to="/" style={{ textDecoration: 'none', color: textColor, fontWeight: 700, fontSize: '16px', letterSpacing: '0.2px' }}>Explore</Link>
+        {/* Desktop Navigation */}
+        <div className="desktop-only" style={{ display: 'flex', gap: '48px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '32px' }}>
+            <Link to="/" style={{ textDecoration: 'none', color: textColor, fontWeight: 700, fontSize: '15px' }}>Explore</Link>
+            {user && (user.role === 'admin' || user.role === 'owner' ? (
+              <Link to="/admin" style={{ textDecoration: 'none', color: textColor, fontWeight: 700, fontSize: '15px' }}>Dashboard</Link>
+            ) : (
+              <Link to="/my-bookings" style={{ textDecoration: 'none', color: textColor, fontWeight: 700, fontSize: '15px' }}>My Bookings</Link>
+            ))}
+          </div>
+
+          <div style={{ width: '1px', height: '24px', background: scrolled || !isHome ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)' }}></div>
+
           {user ? (
-            <>
-              {user.role === 'admin' || user.role === 'owner' ? (
-                <Link to="/admin" style={{ textDecoration: 'none', color: textColor, fontWeight: 700, fontSize: '16px' }}>Dashboard</Link>
-              ) : (
-                <Link to="/my-bookings" style={{ textDecoration: 'none', color: textColor, fontWeight: 700, fontSize: '16px' }}>My Bookings</Link>
-              )}
-              <div style={{ height: '24px', width: '1px', background: 'rgba(0,0,0,0.1)' }}></div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: textColor }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: scrolled || !isHome ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.1)', padding: '6px 16px 6px 6px', borderRadius: '100px', border: '1px solid rgba(0,0,0,0.05)' }}>
+                <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '14px', boxShadow: '0 4px 10px rgba(99, 102, 241, 0.3)' }}>
                   {user.name.charAt(0)}
                 </div>
-                <span style={{ fontWeight: 700, fontSize: '16px' }}>{user.name}</span>
+                <span style={{ fontWeight: 700, fontSize: '14px', color: textColor }}>{user.name}</span>
               </div>
-              <button onClick={handleLogout} style={{ background: 'var(--secondary)', color: 'white', padding: '10px 20px', borderRadius: '14px', fontSize: '15px' }}>
+              <button
+                onClick={handleLogout}
+                className="glass"
+                style={{ width: '40px', height: '40px', borderRadius: '12px', padding: 0, color: textColor, border: '1px solid rgba(0,0,0,0.1)' }}
+              >
                 <LogOut size={18} />
               </button>
-            </>
+            </div>
           ) : (
-            <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-              <Link to="/login" style={{ textDecoration: 'none', color: textColor, fontWeight: 700, fontSize: '16px' }}>Sign In</Link>
-              <Link to="/signup" className="btn-primary" style={{ textDecoration: 'none', borderRadius: '16px', padding: '12px 28px', fontSize: '16px' }}>Join Now</Link>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+              <Link to="/login" style={{ textDecoration: 'none', color: textColor, fontWeight: 700, fontSize: '15px', padding: '10px 20px' }}>Sign In</Link>
+              <Link to="/signup" className="btn-primary" style={{ textDecoration: 'none', borderRadius: '14px', padding: '12px 28px', fontSize: '15px' }}>Get Started</Link>
             </div>
           )}
         </div>
 
-        {/* Mobile Toggle */}
-        <button className="mobile-only" onClick={() => setIsOpen(!isOpen)} style={{ background: 'none', color: textColor }}>
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        {/* Mobile Menu Toggle */}
+        <button className="mobile-only glass" onClick={() => setIsOpen(!isOpen)} style={{ width: '48px', height: '48px', borderRadius: '12px', color: textColor }}>
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       {isOpen && (
-        <div className="mobile-only animate-fade" style={{ position: 'absolute', top: '100%', left: '16px', right: '16px', background: 'white', padding: '32px', borderRadius: '24px', boxShadow: 'var(--shadow-xl)', border: '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <Link to="/" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '18px', fontWeight: '700' }}>Home</Link>
+        <div className="mobile-only animate-fade" style={{
+          position: 'absolute',
+          top: '100%',
+          left: '20px',
+          right: '20px',
+          background: 'white',
+          padding: '32px',
+          borderRadius: '28px',
+          boxShadow: '0 30px 60px rgba(0,0,0,0.12)',
+          border: '1px solid rgba(0,0,0,0.05)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px',
+          marginTop: '12px'
+        }}>
+          <Link to="/" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '18px', fontWeight: '750', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Compass size={20} color="var(--primary)" /> Explore Hostels
+          </Link>
           {user ? (
             <>
               {user.role === 'admin' || user.role === 'owner' ? (
-                <Link to="/admin" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '18px', fontWeight: '700' }}>Dashboard</Link>
+                <Link to="/admin" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '18px', fontWeight: '750', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <LayoutDashboard size={20} color="var(--primary)" /> Admin Dashboard
+                </Link>
               ) : (
-                <Link to="/my-bookings" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '18px', fontWeight: '700' }}>My Bookings</Link>
+                <Link to="/my-bookings" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '18px', fontWeight: '750', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <BookOpen size={20} color="var(--primary)" /> My Bookings
+                </Link>
               )}
+              <div style={{ height: '1px', background: 'var(--border-light)' }}></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>
+                  {user.name.charAt(0)}
+                </div>
+                <div>
+                  <div style={{ fontWeight: '800', fontSize: '16px' }}>{user.name}</div>
+                  <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{user.email}</div>
+                </div>
+              </div>
               <button onClick={handleLogout} className="btn-primary" style={{ width: '100%', borderRadius: '16px' }}>Logout</button>
             </>
           ) : (
             <>
-              <Link to="/login" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '18px', fontWeight: '700' }}>Login</Link>
-              <Link to="/signup" onClick={() => setIsOpen(false)} className="btn-primary" style={{ textDecoration: 'none', borderRadius: '16px', textAlign: 'center' }}>Sign Up</Link>
+              <Link to="/login" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none', color: 'var(--text-main)', fontSize: '18px', fontWeight: '750' }}>Sign In</Link>
+              <Link to="/signup" onClick={() => setIsOpen(false)} className="btn-primary" style={{ textDecoration: 'none', borderRadius: '16px', textAlign: 'center' }}>Create Account</Link>
             </>
           )}
         </div>
@@ -164,39 +203,75 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </main>
-        <footer style={{ background: '#0f172a', color: 'white', padding: '80px 0 40px', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)' }}></div>
+
+        {/* Premium Footer */}
+        <footer style={{ background: '#0a0f1d', color: 'white', padding: '100px 0 50px', position: 'relative', overflow: 'hidden' }}>
+          {/* Decorative shapes */}
+          <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '30%', height: '40%', background: 'radial-gradient(circle, var(--primary) 0%, transparent 70%)', filter: 'blur(100px)', opacity: 0.1 }}></div>
+
           <div className="container">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '64px', marginBottom: '64px' }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                  <div style={{ background: 'white', color: 'var(--primary)', padding: '6px', borderRadius: '10px' }}>
-                    <Building size={20} strokeWidth={2.5} />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '80px', marginBottom: '80px' }}>
+              <div style={{ maxWidth: '350px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+                  <div style={{ background: 'white', padding: '6px', borderRadius: '12px', display: 'flex', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
+                    <img src="/logo.png" alt="HostelHive" style={{ height: '36px', width: 'auto' }} />
                   </div>
-                  <span style={{ fontWeight: 800, fontSize: '20px' }}>HostelHive</span>
+                  <span style={{ fontWeight: 900, fontSize: '24px', letterSpacing: '-0.02em' }}>HostelHive</span>
                 </div>
-                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px', lineHeight: '1.6' }}>
-                  Redefining student accommodation with technology and transparency. Find your place, feel at home.
+                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '16px', lineHeight: '1.8', marginBottom: '32px' }}>
+                  Seamless student accommodation booking. Verified spaces, transparent pricing, and instant moves. Find your second home today.
                 </p>
-              </div>
-              <div>
-                <h4 style={{ fontSize: '18px', marginBottom: '24px' }}>Platform</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <Link to="/" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '15px' }}>Browse Hostels</Link>
-                  <Link to="/login" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '15px' }}>Student Login</Link>
-                  <Link to="/admin-login" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '15px' }}>Property Owners</Link>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  {['Twitter', 'Instagram', 'LinkedIn'].map(social => (
+                    <div key={social} title={social} style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'white' }}></div>
+                    </div>
+                  ))}
                 </div>
               </div>
+
               <div>
-                <h4 style={{ fontSize: '18px', marginBottom: '24px' }}>Contact</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '15px' }}>support@hostelhive.com</div>
-                  <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '15px' }}>+91 9988776655</div>
+                <h4 style={{ fontSize: '18px', marginBottom: '32px', fontWeight: '800', borderLeft: '3px solid var(--primary)', paddingLeft: '16px' }}>Platform</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                  <Link to="/" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Compass size={16} /> Browse Hostels
+                  </Link>
+                  <Link to="/login" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <User size={16} /> Student Sign In
+                  </Link>
+                  <Link to="/admin-login" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Shield size={16} /> Property Owners
+                  </Link>
+                </div>
+              </div>
+
+              <div>
+                <h4 style={{ fontSize: '18px', marginBottom: '32px', fontWeight: '800', borderLeft: '3px solid var(--secondary)', paddingLeft: '16px' }}>Support</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'rgba(255,255,255,0.6)' }}>
+                    <div style={{ color: 'var(--primary)' }}><X size={20} /></div>
+                    <div>
+                      <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>EMAILS US</div>
+                      <div style={{ fontSize: '16px' }}>hello@hostelhive.com</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'rgba(255,255,255,0.6)' }}>
+                    <div style={{ color: 'var(--secondary)' }}><Phone size={20} /></div>
+                    <div>
+                      <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>CALL US</div>
+                      <div style={{ fontSize: '16px' }}>+91 99887 76655</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div style={{ paddingTop: '40px', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px' }}>&copy; 2026 HostelHive. Built for students, by students.</p>
+
+            <div style={{ paddingTop: '40px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px' }}>&copy; 2026 HostelHive. Crafted with excellence for students.</p>
+              <div style={{ display: 'flex', gap: '32px' }}>
+                <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px', cursor: 'pointer' }}>Privacy Policy</span>
+                <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px', cursor: 'pointer' }}>Terms of Service</span>
+              </div>
             </div>
           </div>
         </footer>

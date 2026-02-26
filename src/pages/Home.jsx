@@ -24,183 +24,222 @@ const Home = () => {
     );
 
     return (
-        <div>
-            {/* Minimal Hero Section */}
+        <div style={{ background: 'var(--bg)' }}>
+            {/* Immersive Hero Section */}
             <section style={{
-                background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
-                padding: '120px 24px 80px',
-                textAlign: 'center',
-                color: 'white',
                 position: 'relative',
+                minHeight: '90vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '160px 24px 100px',
+                background: 'var(--bg-dark)',
+                color: 'white',
                 overflow: 'hidden'
             }}>
-                {/* Decorative Elements */}
-                <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '300px', height: '300px', background: 'var(--primary)', filter: 'blur(120px)', opacity: 0.2 }}></div>
-                <div style={{ position: 'absolute', bottom: '-100px', right: '-100px', width: '300px', height: '300px', background: 'var(--accent)', filter: 'blur(120px)', opacity: 0.2 }}></div>
+                {/* Visual Depth Elements */}
+                <div style={{ position: 'absolute', top: '-10%', left: '-5%', width: '40%', height: '50%', background: 'radial-gradient(circle, var(--primary) 0%, transparent 70%)', filter: 'blur(150px)', opacity: 0.3 }}></div>
+                <div style={{ position: 'absolute', bottom: '-10%', right: '-5%', width: '40%', height: '50%', background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)', filter: 'blur(150px)', opacity: 0.3 }}></div>
 
-                <div className="container" style={{ position: 'relative', zIndex: 2 }}>
-                    <div className="animate-fade" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.1)', padding: '8px 20px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', marginBottom: '24px', fontSize: '14px', fontWeight: '600' }}>
-                        <Sparkles size={16} color="var(--primary-light)" />
-                        <span>The smarter way to find student housing</span>
+                {/* Floating Shapes for Dynamism */}
+                <div className="animate-fade" style={{ position: 'absolute', top: '20%', right: '15%', width: '120px', height: '120px', borderRadius: '40px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', transform: 'rotate(15deg)' }}></div>
+                <div className="animate-fade animate-delay-2" style={{ position: 'absolute', bottom: '25%', left: '10%', width: '80px', height: '80px', borderRadius: '25px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', transform: 'rotate(-10deg)' }}></div>
+
+                <div className="container" style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
+                    <div className="animate-fade" style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        background: 'rgba(255,255,255,0.08)',
+                        padding: '10px 24px',
+                        borderRadius: '100px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        marginBottom: '32px',
+                        backdropFilter: 'blur(12px)',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+                    }}>
+                        <div style={{ background: 'var(--primary)', padding: '6px', borderRadius: '50%', display: 'flex' }}>
+                            <Sparkles size={14} color="white" />
+                        </div>
+                        <span style={{ fontSize: '15px', fontWeight: '700', letterSpacing: '0.02em' }}>OVER 5,000+ STUDENTS TRUST US</span>
                     </div>
 
-                    <h1 style={{ fontSize: '72px', maxWidth: '900px', margin: '0 auto 24px', letterSpacing: '-1.5px', lineHeight: 1.1 }}>
-                        Find Your <span className="gradient-text">Dream Home</span> Near Campus
+                    <h1 style={{
+                        fontSize: 'clamp(48px, 6vw, 84px)',
+                        maxWidth: '1000px',
+                        margin: '0 auto 32px',
+                        lineHeight: 1.05,
+                        fontWeight: 900
+                    }}>
+                        Find Your Perfect <span className="gradient-text">Living Space</span> Near Campus
                     </h1>
 
-                    <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '22px', maxWidth: '700px', margin: '0 auto 48px' }}>
-                        Verified hostels, instant bookings, and a safe community. Everything you need for the perfect college life.
+                    <p style={{
+                        color: 'rgba(255,255,255,0.6)',
+                        fontSize: 'clamp(18px, 1.5vw, 22px)',
+                        maxWidth: '750px',
+                        margin: '0 auto 56px',
+                        lineHeight: 1.6
+                    }}>
+                        Verified student housing with zero brokerage. Join thousands of students living in the safest and most vibrant communities.
                     </p>
 
-                    <div className="card animate-fade" style={{
-                        maxWidth: '800px',
+                    {/* Advanced Search Bar */}
+                    <div className="animate-fade animate-delay-1" style={{
+                        maxWidth: '850px',
                         margin: '0 auto',
+                        background: 'rgba(255,255,255,0.98)',
                         padding: '12px',
+                        borderRadius: '28px',
                         display: 'flex',
-                        gap: '12px',
-                        background: 'rgba(255,255,255,0.95)',
-                        backdropFilter: 'blur(10px)',
-                        borderRadius: '32px'
+                        alignItems: 'center',
+                        gap: '8px',
+                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+                        border: '1px solid rgba(255,255,255,1)'
                     }}>
-                        <div style={{ flex: 1, position: 'relative' }}>
-                            <Search style={{ position: 'absolute', left: '20px', top: '22px', color: 'var(--text-light)' }} size={24} />
+                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', paddingLeft: '24px' }}>
+                            <Search size={22} color="var(--text-light)" />
                             <input
                                 type="text"
-                                placeholder="Where do you want to live? (Area or Hostel Name)"
+                                placeholder="Enter area, college or hostel name..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 style={{
-                                    paddingLeft: '60px',
-                                    height: '68px',
                                     background: 'transparent',
                                     border: 'none',
                                     fontSize: '18px',
-                                    boxShadow: 'none'
+                                    padding: '18px 16px',
+                                    boxShadow: 'none',
+                                    fontWeight: '500',
+                                    color: 'var(--text-main)'
                                 }}
                             />
                         </div>
-                        <button className="btn-primary" style={{ padding: '0 40px', borderRadius: '24px', height: '68px' }}>
-                            Search Now
+                        <button className="btn-primary" style={{ height: '64px', borderRadius: '20px', padding: '0 48px', fontSize: '18px' }}>
+                            Search
                         </button>
                     </div>
                 </div>
             </section>
 
-            <div className="container" style={{ padding: '80px 32px' }}>
-                {/* Dashboard Previews for Logged In Users */}
+            <div className="container" style={{ padding: '100px 2rem' }}>
+                {/* User Context Card */}
                 {user && (
                     <div className="animate-fade" style={{
-                        background: 'white',
-                        padding: '32px',
+                        background: 'var(--bg-subtle)',
+                        padding: '40px',
                         borderRadius: '32px',
-                        border: '1px solid var(--border-light)',
                         display: 'flex',
+                        flexWrap: 'wrap',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        marginBottom: '64px',
-                        boxShadow: 'var(--shadow-md)'
+                        gap: '32px',
+                        marginBottom: '80px',
+                        border: '1px solid var(--border-light)'
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
                             <div style={{
-                                width: '64px',
-                                height: '64px',
-                                borderRadius: '20px',
-                                background: user.role === 'admin' ? '#1e293b' : 'var(--primary)',
+                                width: '80px',
+                                height: '80px',
+                                borderRadius: '24px',
+                                background: 'white',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: 'white'
+                                color: 'var(--primary)',
+                                boxShadow: 'var(--shadow-md)',
+                                fontSize: '32px'
                             }}>
-                                {user.role === 'admin' ? <ShieldCheck size={32} /> : <Building2 size={32} />}
+                                {user.role === 'admin' ? <ShieldCheck size={36} /> : <Building2 size={36} />}
                             </div>
                             <div>
-                                <h2 style={{ fontSize: '24px', fontWeight: '800' }}>Hey {user.name}, welcome back!</h2>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>
-                                    {(user.role === 'admin' || user.role === 'owner') ? 'Manage your property fleet' : 'Manage your stays and explore more'}
+                                <h2 style={{ fontSize: '28px', fontWeight: '800', marginBottom: '4px', letterSpacing: '-0.02em' }}>Welcome back, {user.name.split(' ')[0]}!</h2>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '18px', fontWeight: '500' }}>
+                                    {(user.role === 'admin' || user.role === 'owner') ? 'Property Management Dashboard' : 'Your bookings and saved hostels'}
                                 </p>
                             </div>
                         </div>
                         <Link
                             to={(user.role === 'admin' || user.role === 'owner') ? '/admin' : '/my-bookings'}
-                            className="btn-outline"
-                            style={{ borderRadius: '20px', fontSize: '16px' }}
+                            className="btn btn-primary"
+                            style={{ padding: '16px 36px', borderRadius: '18px' }}
                         >
-                            Open Dashboard <ArrowRight size={18} />
+                            Visit Dashboard <ArrowRight size={20} />
                         </Link>
                     </div>
                 )}
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' }}>
+                {/* Section Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '56px' }}>
                     <div>
-                        <h2 style={{ fontSize: '36px', marginBottom: '8px' }}>Available Listings</h2>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>Explore {filteredHostels.length} unique properties</p>
+                        <div style={{ color: 'var(--primary)', fontWeight: '800', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>Curated Spaces</div>
+                        <h2 style={{ fontSize: 'clamp(32px, 4vw, 44px)', fontWeight: '900', letterSpacing: '-0.03em' }}>Available Properties</h2>
                     </div>
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                        <button className="badge badge-blue">All</button>
+                    <div className="glass" style={{ padding: '8px 24px', borderRadius: '100px', fontSize: '15px', fontWeight: '700', color: 'var(--primary)', border: '1.5px solid var(--primary-light)' }}>
+                        {filteredHostels.length} hostels found
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '40px' }}>
-                    {filteredHostels.map(hostel => (
-                        <Link key={hostel.id} to={`/hostel/${hostel.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                            <div className="card animate-fade">
-                                <div style={{ position: 'relative', height: '300px' }}>
+                {/* Grid of Hostels */}
+                <div className="grid grid-3">
+                    {filteredHostels.map((hostel, idx) => (
+                        <Link
+                            key={hostel.id}
+                            to={`/hostel/${hostel.id}`}
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                            className={`animate-fade animate-delay-${(idx % 3) + 1}`}
+                        >
+                            <div className="card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ position: 'relative', height: '320px', overflow: 'hidden' }}>
                                     <img
                                         src={(hostel.images && hostel.images.length > 0) ? hostel.images[0] : 'https://images.unsplash.com/photo-1555854817-5b2738a7528d?auto=format&fit=crop&w=800&q=80'}
                                         alt={hostel.name}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1555854817-5b2738a7528d?auto=format&fit=crop&w=800&q=80' }}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)' }}
+                                        className="hostel-img"
                                     />
-                                    <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px' }}>
-                                        <div className="glass" style={{ padding: '6px 16px', borderRadius: '30px', fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>
-                                            {hostel.distance}
+                                    <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 5 }}>
+                                        <div className="glass" style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: '800', color: 'var(--text-main)', border: '1px solid rgba(255,255,255,0.5)' }}>
+                                            {hostel.distance || '0.5 km'}
                                         </div>
+                                    </div>
+                                    <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 5 }}>
+                                        <button style={{ width: '44px', height: '44px', background: 'rgba(255,255,255,0.9)', color: 'var(--secondary)', borderRadius: '14px', padding: 0 }}>
+                                            <Heart size={20} fill={idx === 0 ? 'currentColor' : 'none'} />
+                                        </button>
                                     </div>
                                     <div style={{
                                         position: 'absolute',
                                         bottom: '0',
                                         left: '0',
                                         right: '0',
-                                        padding: '40px 20px 20px',
-                                        background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)'
+                                        padding: '60px 24px 24px',
+                                        background: 'linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, transparent 100%)',
+                                        color: 'white'
                                     }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'white' }}>
-                                            <div>
-                                                <h3 style={{ fontSize: '24px', fontWeight: '800' }}>{hostel.name}</h3>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', opacity: 0.9, fontSize: '15px' }}>
-                                                    <MapPin size={14} /> {hostel.location}
-                                                </div>
-                                            </div>
-                                            <div style={{
-                                                width: '40px',
-                                                height: '40px',
-                                                borderRadius: '50%',
-                                                background: 'rgba(255,255,255,0.2)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                backdropFilter: 'blur(5px)'
-                                            }}>
-                                                <Heart size={20} />
-                                            </div>
+                                        <h3 style={{ fontSize: '26px', fontWeight: '800', marginBottom: '6px', letterSpacing: '-0.02em' }}>{hostel.name}</h3>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: 0.8, fontSize: '15px' }}>
+                                            <MapPin size={16} /> {hostel.location}
                                         </div>
                                     </div>
                                 </div>
-                                <div style={{ padding: '24px' }}>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
+                                <div style={{ padding: '28px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '32px' }}>
                                         {hostel.amenities.slice(0, 3).map(amt => (
-                                            <span key={amt} className="badge badge-blue" style={{ fontSize: '13px' }}>{amt}</span>
+                                            <span key={amt} className="badge badge-primary" style={{ fontSize: '12px', padding: '6px 12px' }}>{amt}</span>
                                         ))}
-                                        {hostel.amenities.length > 3 && <span className="badge" style={{ background: '#f1f5f9', fontSize: '13px' }}>+{hostel.amenities.length - 3}</span>}
+                                        {hostel.amenities.length > 3 && <span className="badge" style={{ background: '#f1f5f9', fontSize: '12px' }}>+{hostel.amenities.length - 3}</span>}
                                     </div>
 
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '24px', borderTop: '1px solid var(--border-light)' }}>
                                         <div>
-                                            <div style={{ color: 'var(--text-muted)', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase' }}>Starts from</div>
-                                            <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--text-main)' }}>₹{hostel.price}<span style={{ fontSize: '16px', color: 'var(--text-muted)', fontWeight: '400' }}>/mo</span></div>
+                                            <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', marginBottom: '4px' }}>Starting at</div>
+                                            <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--text-main)', display: 'flex', alignItems: 'baseline' }}>
+                                                ₹{hostel.price}
+                                                <span style={{ fontSize: '15px', color: 'var(--text-muted)', fontWeight: '500', marginLeft: '2px' }}> /mo</span>
+                                            </div>
                                         </div>
-                                        <button className="btn-primary" style={{ padding: '12px 24px', borderRadius: '16px', fontSize: '15px' }}>
-                                            Book Room
+                                        <button className="btn btn-primary" style={{ padding: '14px 24px', borderRadius: '16px' }}>
+                                            Book Now
                                         </button>
                                     </div>
                                 </div>
@@ -210,32 +249,56 @@ const Home = () => {
                 </div>
 
                 {filteredHostels.length === 0 && (
-                    <div style={{ textAlign: 'center', padding: '120px 24px', color: 'var(--text-muted)', background: 'var(--bg-subtle)', borderRadius: '40px', marginTop: '40px' }}>
+                    <div style={{ textAlign: 'center', padding: '100px 40px', color: 'var(--text-muted)', background: 'var(--bg-subtle)', borderRadius: '48px', marginTop: '60px' }}>
                         <div style={{
-                            width: '100px',
-                            height: '100px',
-                            borderRadius: '50%',
+                            width: '120px',
+                            height: '120px',
+                            borderRadius: '40px',
                             background: 'white',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            margin: '0 auto 24px',
-                            boxShadow: 'var(--shadow)'
+                            margin: '0 auto 32px',
+                            boxShadow: 'var(--shadow-md)',
+                            color: 'var(--border)'
                         }}>
-                            <Search size={48} color="var(--border)" />
+                            <Search size={56} />
                         </div>
-                        <h3 style={{ fontSize: '24px', marginBottom: '8px', color: 'var(--text-main)' }}>No properties match your search</h3>
-                        <p style={{ fontSize: '18px' }}>Try searching with a different keyword or browse all properties.</p>
+                        <h3 style={{ fontSize: '28px', marginBottom: '12px', color: 'var(--text-main)', fontWeight: '800' }}>No hostels match your search</h3>
+                        <p style={{ fontSize: '18px', maxWidth: '500px', margin: '0 auto 32px' }}>We couldn't find any properties matching "{search}". Try searching for another location or hostel name.</p>
                         <button
                             onClick={() => setSearch('')}
-                            className="btn-outline"
-                            style={{ marginTop: '24px', borderRadius: '20px' }}
+                            className="btn btn-outline"
+                            style={{ padding: '16px 40px' }}
                         >
-                            Reset Search
+                            Explore All Properties
                         </button>
                     </div>
                 )}
             </div>
+
+            {/* Why Choose Us Section */}
+            <section style={{ background: 'var(--bg-subtle)', borderTop: '1px solid var(--border-light)' }}>
+                <div className="container">
+                    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                        <h2 style={{ fontSize: '44px', fontWeight: '900', marginBottom: '16px' }}>Why <span className="gradient-text">HostelHive</span>?</h2>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '20px', maxWidth: '600px', margin: '0 auto' }}>We handle the hard part so you can focus on your studies.</p>
+                    </div>
+                    <div className="grid grid-3">
+                        {[
+                            { icon: <ShieldCheck size={32} />, title: 'Verified Profiles', desc: 'Every property goes through a 15-point verification check.' },
+                            { icon: <Navigation size={32} />, title: 'Near Campus', desc: 'All hostels are within walking distance to major universities.' },
+                            { icon: <Sparkles size={32} />, title: 'Instant Booking', desc: 'Book your room in under 2 minutes with simple digital paperwork.' }
+                        ].map((item, i) => (
+                            <div key={i} className="card" style={{ padding: '48px', background: 'white' }}>
+                                <div style={{ color: 'var(--primary)', marginBottom: '24px' }}>{item.icon}</div>
+                                <h3 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '16px' }}>{item.title}</h3>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '16px', lineHeight: 1.7 }}>{item.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
         </div>
     );
 };

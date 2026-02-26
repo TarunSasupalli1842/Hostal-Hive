@@ -241,6 +241,16 @@ export const getStudentBookings = async (studentId) => {
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
+export const getOwnerDetails = async (ownerId) => {
+    if (!ownerId) return null;
+    const docRef = doc(db, OWNERS, ownerId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() };
+    }
+    return null;
+};
+
 // Ratings Logic
 export const submitRating = async (hostelId, ratingData) => {
     const ratingsRef = collection(db, 'ratings');

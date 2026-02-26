@@ -50,161 +50,119 @@ const Signup = ({ onLogin }) => {
     return (
         <div style={{
             minHeight: '100vh',
-            background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+            background: '#0a0f1d',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '100px 24px 60px',
-            fontFamily: "'Inter', sans-serif"
+            padding: '120px 24px 80px',
+            position: 'relative',
+            overflow: 'hidden'
         }}>
-            <div style={{
+            {/* Visual background flares */}
+            <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '40%', height: '50%', background: 'radial-gradient(circle, var(--primary) 0%, transparent 70%)', filter: 'blur(120px)', opacity: 0.1 }}></div>
+            <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '40%', height: '50%', background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)', filter: 'blur(120px)', opacity: 0.1 }}></div>
+
+            <div className="animate-fade" style={{
                 width: '100%',
-                maxWidth: '650px',
-                background: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(10px)',
+                maxWidth: '680px',
+                background: 'rgba(255, 255, 255, 0.98)',
                 borderRadius: '40px',
                 padding: '56px',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                animation: 'slideUp 0.6s ease-out'
+                boxShadow: '0 40px 80px rgba(0, 0, 0, 0.4)',
+                position: 'relative',
+                zIndex: 10
             }}>
-                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <div style={{
-                        width: '70px',
-                        height: '70px',
-                        borderRadius: '20px',
-                        background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        margin: '0 auto 24px',
-                        boxShadow: '0 10px 20px -5px rgba(99, 102, 241, 0.4)'
-                    }}>
-                        <UserPlus size={32} />
+                <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
+                        <div style={{ background: 'white', padding: '8px', borderRadius: '18px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid var(--border-light)' }}>
+                            <img src="/logo.png" alt="HostelHive" style={{ height: '52px', width: 'auto' }} />
+                        </div>
                     </div>
-                    <div style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        background: 'rgba(99, 102, 241, 0.1)',
-                        color: '#6366f1',
-                        padding: '6px 16px',
-                        borderRadius: '100px',
-                        fontSize: '13px',
-                        fontWeight: '700',
-                        marginBottom: '16px'
-                    }}>
-                        <Sparkles size={14} />
-                        <span>JOIN THE COMMUNITY</span>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99, 102, 241, 0.08)', color: 'var(--primary)', padding: '8px 20px', borderRadius: '100px', fontSize: '13px', fontWeight: '800', marginBottom: '20px', letterSpacing: '0.04em' }}>
+                        <Sparkles size={14} /> JOIN THE HIVE COMMUNITY
                     </div>
-                    <h2 style={{ fontSize: '36px', fontWeight: '800', color: '#1f2937', marginBottom: '12px', letterSpacing: '-0.8px' }}>Create Account</h2>
-                    <p style={{ color: '#6b7280', fontSize: '16px' }}>Start your journey to finding the perfect home.</p>
+                    <h2 style={{ fontSize: '40px', fontWeight: '900', color: 'var(--text-main)', marginBottom: '12px', letterSpacing: '-0.04em' }}>Create Your Account</h2>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '17px', fontWeight: '500' }}>Your journey to a perfect student life starts here.</p>
                 </div>
 
                 {error && (
-                    <div style={{
-                        background: '#fef2f2',
-                        color: '#dc2626',
-                        padding: '16px',
-                        borderRadius: '16px',
-                        marginBottom: '32px',
-                        textAlign: 'center',
-                        fontWeight: '600',
-                        border: '1px solid #fee2e2'
-                    }}>
+                    <div className="animate-fade" style={{ background: '#fef2f2', color: '#dc2626', padding: '16px', borderRadius: '18px', marginBottom: '32px', fontSize: '14px', fontWeight: '750', border: '1px solid #fee2e2', textAlign: 'center' }}>
                         {error}
                     </div>
                 )}
 
-                <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
+                {/* Role Switcher */}
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '40px' }}>
                     <button
                         type="button"
                         onClick={() => setFormData({ ...formData, role: 'student' })}
                         style={{
                             flex: 1,
-                            padding: '16px',
-                            borderRadius: '16px',
-                            border: formData.role === 'student' ? '2px solid #6366f1' : '1.5px solid #e5e7eb',
-                            background: formData.role === 'student' ? 'rgba(99, 102, 241, 0.05)' : 'white',
-                            color: formData.role === 'student' ? '#6366f1' : '#6b7280',
-                            fontWeight: '700',
+                            height: '64px',
+                            borderRadius: '20px',
+                            border: formData.role === 'student' ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                            background: formData.role === 'student' ? 'rgba(99, 102, 241, 0.04)' : 'transparent',
+                            color: formData.role === 'student' ? 'var(--primary)' : 'var(--text-muted)',
+                            fontWeight: '800',
+                            fontSize: '15px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '8px',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
+                            gap: '10px'
                         }}
                     >
-                        <User size={18} /> Student
+                        <User size={20} /> I'm a Student
                     </button>
                     <button
                         type="button"
                         onClick={() => setFormData({ ...formData, role: 'owner' })}
                         style={{
                             flex: 1,
-                            padding: '16px',
-                            borderRadius: '16px',
-                            border: formData.role === 'owner' ? '2px solid #6366f1' : '1.5px solid #e5e7eb',
-                            background: formData.role === 'owner' ? 'rgba(99, 102, 241, 0.05)' : 'white',
-                            color: formData.role === 'owner' ? '#6366f1' : '#6b7280',
-                            fontWeight: '700',
+                            height: '64px',
+                            borderRadius: '20px',
+                            border: formData.role === 'owner' ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                            background: formData.role === 'owner' ? 'rgba(99, 102, 241, 0.04)' : 'transparent',
+                            color: formData.role === 'owner' ? 'var(--primary)' : 'var(--text-muted)',
+                            fontWeight: '800',
+                            fontSize: '15px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '8px',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
+                            gap: '10px'
                         }}
                     >
-                        <Building2 size={18} /> Hostel Owner
+                        <Building2 size={20} /> I'm an Owner
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
                         <div style={{ position: 'relative' }}>
-                            <User style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} size={18} />
+                            <User style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} size={20} />
                             <input
                                 name="name"
                                 placeholder="Full Name"
                                 value={formData.name}
                                 onChange={handleChange}
                                 required
-                                style={{
-                                    width: '100%',
-                                    padding: '16px 16px 16px 48px',
-                                    borderRadius: '16px',
-                                    border: '1.5px solid #e5e7eb',
-                                    background: 'white',
-                                    fontSize: '15px',
-                                    boxSizing: 'border-box'
-                                }}
+                                style={{ paddingLeft: '56px', height: '64px', borderRadius: '20px', background: 'var(--bg-subtle)' }}
                             />
                         </div>
                         <div style={{ position: 'relative' }}>
-                            <Phone style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} size={18} />
+                            <Phone style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} size={20} />
                             <input
                                 name="phone"
-                                placeholder="Phone Number"
+                                placeholder="WhatsApp Number"
                                 value={formData.phone}
                                 onChange={handleChange}
                                 required
-                                style={{
-                                    width: '100%',
-                                    padding: '16px 16px 16px 48px',
-                                    borderRadius: '16px',
-                                    border: '1.5px solid #e5e7eb',
-                                    background: 'white',
-                                    fontSize: '15px',
-                                    boxSizing: 'border-box'
-                                }}
+                                style={{ paddingLeft: '56px', height: '64px', borderRadius: '20px', background: 'var(--bg-subtle)' }}
                             />
                         </div>
                     </div>
 
                     <div style={{ position: 'relative' }}>
-                        <Mail style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} size={18} />
+                        <Mail style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} size={20} />
                         <input
                             name="email"
                             type="email"
@@ -212,102 +170,48 @@ const Signup = ({ onLogin }) => {
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            style={{
-                                width: '100%',
-                                padding: '16px 16px 16px 48px',
-                                borderRadius: '16px',
-                                border: '1.5px solid #e5e7eb',
-                                background: 'white',
-                                fontSize: '15px',
-                                boxSizing: 'border-box'
-                            }}
+                            style={{ paddingLeft: '56px', height: '64px', borderRadius: '20px', background: 'var(--bg-subtle)' }}
                         />
                     </div>
 
-                    {formData.role !== 'owner' && (
+                    {formData.role === 'student' && (
                         <div style={{ position: 'relative' }}>
-                            <School style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} size={18} />
+                            <School style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} size={20} />
                             <input
                                 name="college"
-                                placeholder="College / University Name"
+                                placeholder="University / College Name"
                                 value={formData.college}
                                 onChange={handleChange}
                                 required
-                                style={{
-                                    width: '100%',
-                                    padding: '16px 16px 16px 48px',
-                                    borderRadius: '16px',
-                                    border: '1.5px solid #e5e7eb',
-                                    background: 'white',
-                                    fontSize: '15px',
-                                    boxSizing: 'border-box'
-                                }}
+                                style={{ paddingLeft: '56px', height: '64px', borderRadius: '20px', background: 'var(--bg-subtle)' }}
                             />
                         </div>
                     )}
 
                     <div style={{ position: 'relative' }}>
-                        <Lock style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} size={18} />
+                        <Lock style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} size={20} />
                         <input
                             name="password"
                             type="password"
-                            placeholder="Create Password"
+                            placeholder="Secure Password"
                             value={formData.password}
                             onChange={handleChange}
                             required
-                            style={{
-                                width: '100%',
-                                padding: '16px 16px 16px 48px',
-                                borderRadius: '16px',
-                                border: '1.5px solid #e5e7eb',
-                                background: 'white',
-                                fontSize: '15px',
-                                boxSizing: 'border-box'
-                            }}
+                            style={{ paddingLeft: '56px', height: '64px', borderRadius: '20px', background: 'var(--bg-subtle)' }}
                         />
                     </div>
 
-                    <button type="submit" disabled={loading} style={{
-                        background: '#1f2937',
-                        color: 'white',
-                        padding: '18px',
-                        borderRadius: '16px',
-                        fontSize: '17px',
-                        fontWeight: '700',
-                        border: 'none',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '12px',
-                        marginTop: '16px',
-                        transition: 'all 0.2s ease'
-                    }}>
-                        {loading ? <Loader2 className="animate-spin" size={24} /> : <>Create Account <ArrowRight size={22} /></>}
+                    <button type="submit" disabled={loading} className="btn-primary" style={{ height: '72px', borderRadius: '22px', fontSize: '18px', fontWeight: '800', marginTop: '16px' }}>
+                        {loading ? <Loader2 className="animate-spin" size={26} /> : <>Create Account <ArrowRight size={22} /></>}
                     </button>
                 </form>
 
-                <div style={{ textAlign: 'center', marginTop: '40px', borderTop: '1px solid #f3f4f6', paddingTop: '32px' }}>
-                    <p style={{ fontSize: '16px', color: '#6b7280' }}>
-                        Already part of the hive? <Link to="/login" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: '800' }}>Login here</Link>
+                <div style={{ textAlign: 'center', marginTop: '48px', paddingTop: '40px', borderTop: '1px solid var(--border-light)' }}>
+                    <p style={{ fontSize: '16px', color: 'var(--text-muted)', fontWeight: '600' }}>
+                        Already have an account? <Link to="/login" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '800' }}>Sign In here</Link>
                     </p>
                 </div>
             </div>
-            <style>{`
-                @keyframes slideUp {
-                    from { transform: translateY(20px); opacity: 0; }
-                    to { transform: translateY(0); opacity: 1; }
-                }
-                input:focus {
-                    border-color: #6366f1 !important;
-                    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
-                    outline: none;
-                }
-                button:hover {
-                    opacity: 0.95;
-                    transform: translateY(-1px);
-                }
-            `}</style>
         </div>
     );
 };
