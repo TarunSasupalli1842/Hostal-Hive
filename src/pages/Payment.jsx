@@ -37,15 +37,19 @@ const Payment = () => {
                 return;
             }
 
-            const finalBooking = {
+            const rawBooking = {
                 ...bookingDetails,
                 studentId: bookingDetails.studentId || user.id || user.email,
                 status: 'Confirmed',
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                studentName: bookingDetails.studentName || user.name || 'Student',
+                phone: bookingDetails.phone || user.phone || 'N/A',
             };
 
-            finalBooking.studentName = bookingDetails.studentName || user.name || 'Student';
-            finalBooking.phone = bookingDetails.phone || user.phone || 'N/A';
+            // Firestore rejects undefined values — replace them with null
+            const finalBooking = Object.fromEntries(
+                Object.entries(rawBooking).map(([k, v]) => [k, v === undefined ? null : v])
+            );
 
             await addBooking(finalBooking);
 

@@ -75,7 +75,7 @@ const RoomDetail = ({ user }) => {
             roomId: room.id,
             roomType: room.type,
             hostelName: hostel.name,
-            ownerId: hostel.ownerId,
+            ownerId: hostel.ownerId || null,
             totalAmount,
             studentId: user.id || user.email,
             date: new Date().toLocaleDateString()
