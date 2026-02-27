@@ -2,32 +2,56 @@
 import React, { useState, useEffect } from 'react';
 import { getCurrentUser } from '../utils/storage';
 import { getStudentBookings, getOwnerDetails } from '../utils/firebaseService';
+import { db } from '../firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { BookMarked, MapPin, Calendar, Clock, Phone, X, User } from 'lucide-react';
 
 const MyBookings = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
     const [owner, setOwner] = useState(null);
     const [showContactModal, setShowContactModal] = useState(false);
     const [fetchingOwner, setFetchingOwner] = useState(false);
     const user = getCurrentUser();
 
     useEffect(() => {
-        if (user) {
-            const fetchBookings = async () => {
-                setLoading(true);
-                try {
-                    const data = await getStudentBookings(user.id);
-                    setBookings(data);
-                } catch (err) {
-                    console.error(err);
-                } finally {
-                    setLoading(false);
-                }
-            };
-            fetchBookings();
+        if (!user) {
+            setLoading(false);
+            return;
         }
-    }, [user]);
+        const fetchBookings = async () => {
+            setLoading(true);
+            setError('');
+            try {
+                // Bookings may have been saved with either user.id OR user.email as studentId
+                // So we query by both and merge results
+                const bookingsRef = collection(db, 'bookings');
+                const results = new Map();
+
+                if (user.id) {
+                    const q1 = query(bookingsRef, where('studentId', '==', user.id));
+                    const snap1 = await getDocs(q1);
+                    snap1.docs.forEach(d => results.set(d.id, { id: d.id, ...d.data() }));
+                }
+
+                if (user.email) {
+                    const q2 = query(bookingsRef, where('studentId', '==', user.email));
+                    const snap2 = await getDocs(q2);
+                    snap2.docs.forEach(d => results.set(d.id, { id: d.id, ...d.data() }));
+                }
+
+                setBookings(Array.from(results.values()));
+            } catch (err) {
+                console.error('Failed to fetch bookings:', err);
+                setError('Could not load your bookings. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchBookings();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.id, user?.email]);
 
     const handleContactManager = async (ownerId) => {
         if (!ownerId) {
@@ -62,9 +86,20 @@ const MyBookings = () => {
                     </div>
                 </header>
 
-                {loading ? (
+                {!user ? (
+                    <div className="card animate-fade" style={{ padding: '80px 40px', textAlign: 'center', borderRadius: '40px' }}>
+                        <h3 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '12px' }}>Please log in</h3>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '16px', maxWidth: '400px', margin: '0 auto 32px' }}>You need to be logged in to view your bookings.</p>
+                        <a href="/login" className="btn-primary" style={{ textDecoration: 'none', display: 'inline-flex', padding: '16px 32px', borderRadius: '16px' }}>Login</a>
+                    </div>
+                ) : loading ? (
                     <div style={{ textAlign: 'center', padding: '100px 0' }}>
                         <div className="animate-spin" style={{ width: '50px', height: '50px', border: '5px solid rgba(0,0,0,0.05)', borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto' }}></div>
+                    </div>
+                ) : error ? (
+                    <div className="card animate-fade" style={{ padding: '60px 40px', textAlign: 'center', borderRadius: '40px', background: '#fef2f2', border: '1px solid #fee2e2' }}>
+                        <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#dc2626', marginBottom: '12px' }}>{error}</h3>
+                        <button onClick={() => window.location.reload()} className="btn-primary" style={{ marginTop: '16px' }}>Try Again</button>
                     </div>
                 ) : bookings.length === 0 ? (
                     <div className="card animate-fade" style={{ padding: '80px 40px', textAlign: 'center', borderRadius: '40px' }}>
